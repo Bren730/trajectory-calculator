@@ -49,7 +49,8 @@ class Graph {
 		this.lineAttrs = {
 			'stroke-width': this.strokeWidth,
 			'fill-opacity': 0,
-			'fill': 'none'
+			'fill': 'none',
+			'stroke-linecap': 'round'
 		}
 
 	}
@@ -87,8 +88,6 @@ class Graph {
 		this.graphHeight = (this.graphScale * yMax) + this.axesPadding
 		console.log(plotWidth, this.graphScale)
 
-		this.drawAxes(id, xMax, yMax)
-
 		// Set the height of the graph DOM object
 		graphEl.height(this.graphHeight)
 
@@ -120,6 +119,9 @@ class Graph {
 
 			polylineEl.attr(this.lineAttrs)
 
+			// Save the line color in the trajectory object
+			trajectory.color = this.colors[i]
+
 			polylineEl.attr({
 				'stroke': this.colors[i],
 				'stroke-dasharray': trajectory.pathLength * this.graphScale,
@@ -139,6 +141,10 @@ class Graph {
 			i++
 
 		}
+
+		// At the very end, draw the axes and legend to ensure the highest z-value
+		this.drawAxes(id, xMax, yMax)
+		this.drawLegend(id)
 
 	}
 
@@ -186,7 +192,8 @@ class Graph {
 				'stroke-width': this.strokeWidth,
 				'stroke': this.colors[5],
 				'fill-opacity': 0,
-				'fill': 'none'
+				'fill': 'none',
+				'stroke-linecap': 'round'
 			})
 
 			text.attr(this.textAttrs)
@@ -204,13 +211,66 @@ class Graph {
 			line.attr({
 				'stroke-width': this.strokeWidth,
 				'stroke': this.colors[5],
-				'fill-opacity': 0
+				'fill-opacity': 0,
+				'fill': 'none',
+				'stroke-linecap': 'round'
 			})
 
 			text.attr(this.textAttrs)
 			text.attr({
 				'text-anchor': 'end'
 			})
+
+		}
+
+	}
+
+	drawLegend(id) {
+
+		var defVal = DiscusTrajectoryCalculator.defVal
+
+		var snap = Snap('#' + id)
+
+		for (let trajectory of this.trajectories) {
+
+			var xPos = 0
+			var yPos = 10
+
+			var hasDifferentKey = false
+
+			for (var key in trajectory.variables) {
+
+				if (trajectory.variables[key] != defVal[key]) {
+
+					hasDifferentKey = true
+
+					var text = snap.text(xPos + 13, yPos + (this.textSize / 2) - 1, key + ": " + trajectory.variables[key].toFixed(2))
+
+					text.attr(this.textAttrs)
+					text.attr({
+						'text-anchor': 'start'
+					})
+
+					yPos += (this.textSize + 5)
+					console.log(yPos)
+
+				}
+
+			}
+
+			if (hasDifferentKey) {
+
+				var line = snap.line(xPos, yPos, xPos + 10, yPos)
+
+				line.attr({
+					'stroke-width': this.strokeWidth,
+					'stroke': trajectory.color,
+					'fill-opacity': 0,
+					'fill': 'none',
+					'stroke-linecap': 'round'
+				})
+
+			}			
 
 		}
 

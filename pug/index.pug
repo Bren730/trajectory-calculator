@@ -42,31 +42,31 @@ body(ontouchstart)
 			.variables
 				.variable
 					label v#[sub release]
-					input(id='air-resistance-v0' model='air-resistance')
+					input(id='air-resistance-v0' model='air-resistance' placeholder="23.6 m/s")
 				.variable
 					label &theta;#[sub release]
-					input(id='air-resistance-thetaRelease0' model='air-resistance')
+					input(id='air-resistance-thetaRelease0' model='air-resistance' placeholder="35°")
 				.variable
 					label &theta;#[sub attack]
-					input(id='air-resistance-thetaAttack0' model='air-resistance')
+					input(id='air-resistance-thetaAttack0' model='air-resistance' placeholder="0°")
 				.variable
 					label v#[sub wind]
-					input(id='air-resistance-vWind' model='air-resistance')
+					input(id='air-resistance-vWind' model='air-resistance' placeholder="0 m/s")
 				.variable
 					label g
-					input(id='air-resistance-g' model='air-resistance')
+					input(id='air-resistance-g' model='air-resistance' placeholder="9.81 m/s²")
 				.variable
 					label release height
-					input(id='air-resistance-y0' model='air-resistance')
+					input(id='air-resistance-y0' model='air-resistance' placeholder="1.02 m")
 				.variable
 					label &Delta;t
-					input(id='air-resistance-deltaT' model='air-resistance')
+					input(id='air-resistance-deltaT' model='air-resistance' placeholder="0.01 s")
 				.variable
 					label &rho;
-					input(id='air-resistance-rho' model='air-resistance')
+					input(id='air-resistance-rho' model='air-resistance' placeholder="1.225")
 				.variable
 					label Mass
-					input(id='air-resistance-m' model='air-resistance')
+					input(id='air-resistance-m' model='air-resistance' placeholder="2 kg")
 
 			button(id='air-resistance-calculate') Calculate
 			a(id='air-resistance-save' href='' target='_blank') Save

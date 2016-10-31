@@ -8,37 +8,44 @@ class DiscusTrajectoryCalculator {
 		// Default values to use for calculations
 
 		// Object to hold default values
-		this.defVal = {}
+		DiscusTrajectoryCalculator.defVal = {}
 		// Average gravity (m/s^2)
-		this.defVal.g = 9.81
+		DiscusTrajectoryCalculator.defVal.g = 9.81
 		// Average air density (kg/m^3)
-		this.defVal.rho = 1.225
+		DiscusTrajectoryCalculator.defVal.rho = 1.225
 		// Average release speed (m/s)
-		this.defVal.v0 = 23.6
+		DiscusTrajectoryCalculator.defVal.v0 = 23.6
 		// Standard release angle (deg)
-		this.defVal.thetaRelease0 = 35
+		DiscusTrajectoryCalculator.defVal.thetaRelease0 = 35
+		DiscusTrajectoryCalculator.defVal.thetaMotion0 = 35
 		// Standard attack angle (deg)
-		this.defVal.thetaAttack0 = 0
+		DiscusTrajectoryCalculator.defVal.thetaAttack0 = 0
+		DiscusTrajectoryCalculator.defVal.thetaInclination = DiscusTrajectoryCalculator.defVal.thetaRelease0 + DiscusTrajectoryCalculator.defVal.thetaAttack0
+		
 		// Standard stalling angle (deg)
-		this.defVal.thetaStall = 30
+		DiscusTrajectoryCalculator.defVal.thetaStall = 30
+		DiscusTrajectoryCalculator.defVal.vx0 = DiscusTrajectoryCalculator.defVal.v0 * Math.cos(rad(DiscusTrajectoryCalculator.defVal.thetaRelease0))
+		DiscusTrajectoryCalculator.defVal.vy0 = DiscusTrajectoryCalculator.defVal.v0 * Math.sin(rad(DiscusTrajectoryCalculator.defVal.thetaRelease0))
 		// Standard mass (kg)
-		this.defVal.m = 2
+		DiscusTrajectoryCalculator.defVal.m = 2
 		// Standard minimum drag coefficient (dimensionless)
-		this.defVal.cDMin = 0.04
+		DiscusTrajectoryCalculator.defVal.cDMin = 0.04
 		// Standard maximum drag coefficient (dimensionless)
-		this.defVal.cDMax = 0.42
+		DiscusTrajectoryCalculator.defVal.cDMax = 0.42
 		// Frontal surface area of a 2kg discus (m^2)
-		this.defVal.aFront = (0.0535 * 0.045) + (0.0835 * 0.045)
+		DiscusTrajectoryCalculator.defVal.aFront = (0.0535 * 0.045) + (0.0835 * 0.045)
 		// Bottom surface area of a 2kg discus (m^2)
-		this.defVal.aBottom = Math.PI * Math.pow((0.22 / 2), 2)
+		DiscusTrajectoryCalculator.defVal.aBottom = Math.PI * Math.pow((0.22 / 2), 2)
 		// Average release height (m)
-		this.defVal.y0 = 1.02
+		DiscusTrajectoryCalculator.defVal.y0 = 1.02
 		// Default x starting distance 
-		this.defVal.x0 = 0
+		DiscusTrajectoryCalculator.defVal.x0 = 0
 		// Standard delta time interval (s)
-		this.defVal.deltaT = 0.01
+		DiscusTrajectoryCalculator.defVal.deltaT = 0.01
 		// Default wind speed
-		this.defVal.vWind = 0
+		DiscusTrajectoryCalculator.defVal.vWind = 0
+
+		DiscusTrajectoryCalculator._defVal = $.extend(true, {}, DiscusTrajectoryCalculator.defVal)
 
 
 		// Objects to store calculated trajectories
@@ -77,7 +84,7 @@ class DiscusTrajectoryCalculator {
 
 	vacuum(variables) {
 
-		variables = variables || this.defVal
+		variables = variables || $.extend(DiscusTrajectoryCalculator.defVal, variables)
 
 		//Initial speed
 		var v0 = parseFloat($('#vacuum-v0').val()) || variables.v0
@@ -205,7 +212,8 @@ class DiscusTrajectoryCalculator {
 
 	airResistance(variables) {
 
-		variables = variables || this.defVal
+		// This JSON code is necessary to make a copy of the defVal object without referencing it
+		variables = variables || copyObj(DiscusTrajectoryCalculator.defVal)
 
 		//Initial speed
 		var v0 = parseFloat($('#air-resistance-v0').val()) || variables.v0
@@ -265,9 +273,9 @@ class DiscusTrajectoryCalculator {
 		var thetaInclination = thetaRelease0 + thetaAttack0
 		variables.thetaInclination = thetaInclination
 
-		var cD = this.cDrag(thetaAttack, this.defVal.cDMin, this.defVal.cDMax)
+		var cD = this.cDrag(thetaAttack, DiscusTrajectoryCalculator.defVal.cDMin, DiscusTrajectoryCalculator.defVal.cDMax)
 		var cL = this.cLift(thetaAttack)
-		var a = this.surfaceArea(thetaAttack, this.defVal.aFront, this.defVal.aBottom)
+		var a = this.surfaceArea(thetaAttack, DiscusTrajectoryCalculator.defVal.aFront, DiscusTrajectoryCalculator.defVal.aBottom)
 
 		// Initial x acceleration
 		var ax0 = -Math.abs(this.aAeroX(rho, v, cD, cL, a, thetaMotion, m))
@@ -320,9 +328,9 @@ class DiscusTrajectoryCalculator {
 
 			thetaAttack = thetaInclination - thetaMotion
 
-			cD = this.cDrag(thetaAttack, this.defVal.cDMin, this.defVal.cDMax)
+			cD = this.cDrag(thetaAttack, DiscusTrajectoryCalculator.defVal.cDMin, DiscusTrajectoryCalculator.defVal.cDMax)
 			cL = this.cLift(thetaAttack)
-			a = this.surfaceArea(thetaAttack, this.defVal.aFront, this.defVal.aBottom)
+			a = this.surfaceArea(thetaAttack, DiscusTrajectoryCalculator.defVal.aFront, DiscusTrajectoryCalculator.defVal.aBottom)
 
 			var vRelX = vx - vWind
 			var thetaMotionRel = deg(Math.atan(vy / vRelX))
@@ -412,7 +420,7 @@ class DiscusTrajectoryCalculator {
 
 		var cL
 
-		if (thetaAttack < this.defVal.thetaStall) {
+		if (thetaAttack < DiscusTrajectoryCalculator.defVal.thetaStall) {
 
 			cL = thetaAttack / 30
 
@@ -473,4 +481,4 @@ class DiscusTrajectoryCalculator {
 
 }
 
-window.DiscusTrajectoryCalculator = new DiscusTrajectoryCalculator()
+window.discusTrajectoryCalculator = new DiscusTrajectoryCalculator()
