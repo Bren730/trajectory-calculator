@@ -1,20 +1,20 @@
 class Graph {
 	
-	constructor(trajectories) {
+	constructor(trajectories, id) {
+
+		var self = this
 
 		// Array of trajectory objects
 		this.trajectories = trajectories
+
+		this.id = id
 
 		// Array to hold the polylines
 		this.polylines = []
 
 		// The horizontal and vertical space for the axes
-		this.axesPadding = 50
+		this.axesPadding = 30
 
-		// Default graph width (lg graphic)
-		this.graphWidth = 448
-		// Default graph height
-		this.graphHeight = 150
 		// Default graph scale
 		this.graphScale = 1
 		// The height of the tickmarks
@@ -23,6 +23,14 @@ class Graph {
 		this.strokeWidth = 0.5
 		// Default text size
 		this.textSize = 8
+		// The total width of the image
+		this.svgWidth = 900
+		// The width of the legend on the right side
+		this.legendWidth = 100
+		// Default graph width (lg graphic)
+		this.graphWidth = this.svgWidth - this.legendWidth
+		// Default graph height
+		this.graphHeight = 150
 
 		// All colours in sequence
 		this.colors = [
@@ -52,6 +60,42 @@ class Graph {
 			'fill': 'none',
 			'stroke-linecap': 'round'
 		}
+
+		this.legendExclusions = "vx0 vy0 thetaMotion0 thetaInclination"
+
+		this.translationTable = {
+			'v0': 'v₀',
+			'rho': 'ρ',
+			'thetaRelease0': 'θrelease',
+			'thetaAttack0': 'θattack0',
+			'deltaT': 'Δt',
+			'vWind': 'vwind'
+
+		}
+
+		document.addEventListener('changeGraphWidth', function(e) {
+
+			if (e.detail){
+
+				console.log(e.detail)
+
+				self.svgWidth = 900
+				self.graphWidth = self.svgWidth - self.legendWidth
+
+				self.draw(self.id)
+
+			} else 	{
+
+				console.log(e.detail)
+
+				self.svgWidth = 448
+				self.graphWidth = self.svgWidth - self.legendWidth
+
+				self.draw(self.id)
+
+			}
+
+		})
 
 	}
 
@@ -138,6 +182,13 @@ class Graph {
 
 			});
 
+			var finalDistance = snap.text((trajectory.xMax * this.graphScale) + this.axesPadding, this.graphHeight - this.axesPadding + (this.textSize * 3), trajectory.xMax.toFixed(2))
+			finalDistance.attr(this.textAttrs)
+			finalDistance.attr({
+				'text-anchor': 'middle',
+				'fill': trajectory.color
+			})
+
 			i++
 
 		}
@@ -145,6 +196,8 @@ class Graph {
 		// At the very end, draw the axes and legend to ensure the highest z-value
 		this.drawAxes(id, xMax, yMax)
 		this.drawLegend(id)
+
+		this.save(id)
 
 	}
 
@@ -231,20 +284,23 @@ class Graph {
 
 		var snap = Snap('#' + id)
 
-		for (let trajectory of this.trajectories) {
+		var xPos = this.graphWidth + 20
+		var yPos = 10
+		var yStart = yPos
 
-			var xPos = 0
-			var yPos = 10
+		for (let trajectory of this.trajectories) {
 
 			var hasDifferentKey = false
 
 			for (var key in trajectory.variables) {
 
-				if (trajectory.variables[key] != defVal[key]) {
+				if (trajectory.variables[key] != defVal[key] && !this.legendExclusions.includes(key)) {
 
 					hasDifferentKey = true
 
-					var text = snap.text(xPos + 13, yPos + (this.textSize / 2) - 1, key + ": " + trajectory.variables[key].toFixed(2))
+					var unit = this.translationTable[key] || key
+
+					var text = snap.text(xPos + 13, yPos + (this.textSize / 2) - 1, unit + ": " + trajectory.variables[key].toFixed(2))
 
 					text.attr(this.textAttrs)
 					text.attr({
@@ -258,9 +314,22 @@ class Graph {
 
 			}
 
-			if (hasDifferentKey) {
+			if (!hasDifferentKey) {
 
-				var line = snap.line(xPos, yPos, xPos + 10, yPos)
+				var text = snap.text(xPos + 13, yPos + (this.textSize / 2) - 1, 'Default values')
+
+				text.attr(this.textAttrs)
+				text.attr({
+					'text-anchor': 'start'
+				})
+
+				yPos += (this.textSize + 5)
+
+			}
+
+
+
+				var line = snap.line(xPos, yStart, xPos + 10, yStart)
 
 				line.attr({
 					'stroke-width': this.strokeWidth,
@@ -270,7 +339,11 @@ class Graph {
 					'stroke-linecap': 'round'
 				})
 
-			}			
+				yPos += (this.textSize)
+
+				yStart = yPos
+
+					
 
 		}
 
@@ -279,13 +352,15 @@ class Graph {
 	save(id) {
 
 		var svg = document.getElementById(id)
+		var model = $(svg).attr('model')
+		var saveBtn = model + '-save'
 
 		var serializer = new XMLSerializer()
 		var source = serializer.serializeToString(svg)
 
 		var url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
 
-		document.getElementById('air-resistance-save').href = url
+		document.getElementById(saveBtn).href = url
 
 	}
 

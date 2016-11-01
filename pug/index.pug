@@ -12,9 +12,15 @@ body(ontouchstart)
 	.content
 		h1 Discus trajectory calculator
 
+		.toggle-container
+			.toggle(toggleFeature='graphWidth').checked
+				.toggle-fill
+				.toggle-state
+			label.toggle-label Full width graph
+
 		section.vacuum.model
 			h2 Perfect vacuum
-			svg(id='vacuum-model-svg')
+			svg(id='vacuum-model-svg' model='vacuum')
 
 			.variables
 				.variable
@@ -33,11 +39,12 @@ body(ontouchstart)
 					label &Delta;t
 					input(id='vacuum-deltaT' model='vacuum')
 
-			button(id='vacuum-calculate') Calculate
+			button(id='vacuum-calculate').btn Calculate
+			a(id='vacuum-save' href='' target='_blank').btn Save
 
 		section.air-resistance.model
 			h2 Air resistance
-			svg(id='air-resistance-model-svg')
+			svg(id='air-resistance-model-svg' model='air-resistance')
 
 			.variables
 				.variable
@@ -68,8 +75,8 @@ body(ontouchstart)
 					label Mass
 					input(id='air-resistance-m' model='air-resistance' placeholder="2 kg")
 
-			button(id='air-resistance-calculate') Calculate
-			a(id='air-resistance-save' href='' target='_blank') Save
+			button(id='air-resistance-calculate').btn Calculate
+			a(id='air-resistance-save' href='' target='_blank').btn Save
 
 	script(src='static/js/vendor.js')
 	script(src='static/js/app.js')

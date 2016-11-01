@@ -72,14 +72,6 @@ class DiscusTrajectoryCalculator {
 
 		})
 
-		$('#air-resistance-save').on('click tap', function(){
-
-			// var graph = new Graph()
-
-			this.graph.save('air-resistance-model-svg')
-
-		})
-
 	}
 
 	vacuum(variables) {
@@ -203,9 +195,7 @@ class DiscusTrajectoryCalculator {
 		// console.log(data)
 		var el = $('#vacuum-model-svg')
 
-		var graph = new Graph()
-
-		this.graph = new Graph(this.vacuumTrajectories)
+		this.graph = new Graph(this.vacuumTrajectories, 'vacuum-model-svg')
 		this.graph.draw('vacuum-model-svg')
 
 	}
@@ -395,7 +385,7 @@ class DiscusTrajectoryCalculator {
 		trajectory.flightTime = t
 		this.airResistanceTrajectories.push(trajectory)
 
-		this.graph = new Graph(this.airResistanceTrajectories)
+		this.graph = new Graph(this.airResistanceTrajectories, 'air-resistance-model-svg')
 		this.graph.draw('air-resistance-model-svg')
 
 		console.log(trajectory)

@@ -22,3 +22,15 @@ function copyObj(obj) {
 	return _obj
 
 }
+
+$('.toggle').on('click tap', function(e){
+
+	$(this).toggleClass('checked')
+
+	var event = new CustomEvent('changeGraphWidth', {
+		'detail': $(this).hasClass('checked')
+	})
+
+	document.dispatchEvent(event)
+
+})
