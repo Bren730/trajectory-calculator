@@ -24,7 +24,15 @@ class Graph {
 		// Default text size
 		this.textSize = 8
 		// The total width of the image
-		this.svgWidth = 900
+		if (fullWidthGraph) {
+
+			this.svgWidth = 900
+
+		} else {
+
+			this.svgWidth = 448
+		}
+		
 		// The width of the legend on the right side
 		this.legendWidth = 100
 		// Default graph width (lg graphic)
@@ -280,7 +288,7 @@ class Graph {
 
 	drawLegend(id) {
 
-		var defVal = DiscusTrajectoryCalculator.defVal
+		var defVal = copyObj(window.discusTrajectoryCalculator.defVal)
 
 		var snap = Snap('#' + id)
 
@@ -327,23 +335,19 @@ class Graph {
 
 			}
 
+			var line = snap.line(xPos, yStart, xPos + 10, yStart)
 
+			line.attr({
+				'stroke-width': this.strokeWidth,
+				'stroke': trajectory.color,
+				'fill-opacity': 0,
+				'fill': 'none',
+				'stroke-linecap': 'round'
+			})
 
-				var line = snap.line(xPos, yStart, xPos + 10, yStart)
+			yPos += 2
 
-				line.attr({
-					'stroke-width': this.strokeWidth,
-					'stroke': trajectory.color,
-					'fill-opacity': 0,
-					'fill': 'none',
-					'stroke-linecap': 'round'
-				})
-
-				yPos += (this.textSize)
-
-				yStart = yPos
-
-					
+			yStart = yPos		
 
 		}
 

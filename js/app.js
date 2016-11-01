@@ -1,4 +1,4 @@
-
+var fullWidthGraph = true
 
 // Converts degrees into radians
 function rad(deg) {
@@ -26,6 +26,8 @@ function copyObj(obj) {
 $('.toggle').on('click tap', function(e){
 
 	$(this).toggleClass('checked')
+
+	fullWidthGraph = $(this).hasClass('checked')
 
 	var event = new CustomEvent('changeGraphWidth', {
 		'detail': $(this).hasClass('checked')
