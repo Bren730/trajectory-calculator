@@ -25,19 +25,19 @@ body(ontouchstart)
 			.variables
 				.variable
 					label v#[sub release]
-					input(id='vacuum-v0' model='vacuum')
+					input(id='vacuum-v0' model='vacuum' placeholder='23.6 m/s')
 				.variable
 					label &theta;#[sub release]
-					input(id='vacuum-thetaRelease0' model='vacuum')
+					input(id='vacuum-thetaRelease0' model='vacuum' placeholder="35°")
 				.variable
 					label g
-					input(id='vacuum-g' model='vacuum')
+					input(id='vacuum-g' model='vacuum' placeholder="9.81 m/s²")
 				.variable
 					label release height
-					input(id='vacuum-y0' model='vacuum')
+					input(id='vacuum-y0' model='vacuum' placeholder="1.02 m")
 				.variable
 					label &Delta;t
-					input(id='vacuum-deltaT' model='vacuum')
+					input(id='vacuum-deltaT' model='vacuum' placeholder="0.01 s")
 
 			button(id='vacuum-calculate').btn Calculate
 			a(id='vacuum-save' href='' target='_blank').btn Save

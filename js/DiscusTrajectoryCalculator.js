@@ -45,15 +45,17 @@ class DiscusTrajectoryCalculator {
 		// Default wind speed
 		this.defVal.vWind = 0
 
-		DiscusTrajectoryCalculator._defVal = $.extend(true, {}, this.defVal)
-
-
 		// Objects to store calculated trajectories
 
 		// Object to store vacuum trajectories
 		this.vacuumTrajectories = []
 		// Object to store air resistance trajectories
 		this.airResistanceTrajectories = []
+
+		// Simulation limits
+
+		// The maximum simulation time in seconds
+		this.tMax = 30
 
 
 		// Event handlers
@@ -135,7 +137,7 @@ class DiscusTrajectoryCalculator {
 
 		var trajectory = new Trajectory(id, 'vacuum', data, 0, 0, 0, variables)
 
-		while (y > 0 && t < 10) {
+		while (y > 0 && t < this.tMax) {
 
 			// console.log(t, x, y)
 
@@ -312,22 +314,28 @@ class DiscusTrajectoryCalculator {
 
 		data.push(coords0)
 
-		while (y > 0 && t < 30) {
+		while (y > 0 && t < this.tMax) {
 
 			var thetaMotion = deg(Math.atan(vy / vx))
 
 			thetaAttack = thetaInclination - thetaMotion
 
-			cD = this.cDrag(thetaAttack, this.defVal.cDMin, this.defVal.cDMax)
-			cL = this.cLift(thetaAttack)
-			a = this.surfaceArea(thetaAttack, this.defVal.aFront, this.defVal.aBottom)
-
 			var vRelX = vx - vWind
+			// The relative velocity also changes the relative angle of motion and thus the surface area exposed to air drag
 			var thetaMotionRel = deg(Math.atan(vy / vRelX))
+
+			var thetaAttackRel = thetaInclination - thetaMotionRel
+
+			cD = this.cDrag(thetaAttackRel, this.defVal.cDMin, this.defVal.cDMax)
+			cL = this.cLift(thetaAttackRel)
+			a = this.surfaceArea(thetaAttackRel, this.defVal.aFront, this.defVal.aBottom)
+
+			
 			var vRel = Math.sqrt(Math.pow(vRelX, 2) + Math.pow(vy, 2))
 
 			var aAerodynamicsX = -Math.abs(this.aAeroX(rho, vRel, cD, cL, a, thetaMotionRel, m))
 			var aAerodynamicsY = this.aAeroY(rho, vRel, cD, cL, a, thetaMotionRel, m)
+			console.log(thetaMotion, thetaMotionRel)
 
 			ax = aAerodynamicsX
 			ay = -g + aAerodynamicsY
@@ -342,6 +350,8 @@ class DiscusTrajectoryCalculator {
 
 			x += vx * deltaT
 			y += vy * deltaT
+
+			// console.log(aAerodynamicsX, aAerodynamicsY)
 
 			var coords = {
 				't' : t, 
@@ -412,13 +422,22 @@ class DiscusTrajectoryCalculator {
 
 		if (thetaAttack < this.defVal.thetaStall) {
 
-			cL = thetaAttack / 30
+			cL = (thetaAttack / 30) * 0.9
+			// cL = 2 * Math.PI * rad(thetaAttack)
+
+		} else if (thetaAttack < 35) {
+
+			cL = 0.9 - (((thetaAttack - 30) / 5) * 0.3)
+
+		} else if (thetaAttack < 70) {
+
+			cL = 0.6 - (((thetaAttack - 35) / 35) * 0.2)
 
 		} else {
 
-			cL = 0
+			cL = 0.4 - (((thetaAttack - 70) / 20) * 0.4)
+
 		}
-		
 
 		return cL
 
@@ -439,6 +458,8 @@ class DiscusTrajectoryCalculator {
 
 		// Since lift is perpendicular to the angle of motion, we add 90° to thetaMotion
 
+		// thetaMotion = Math.abs(thetaMotion)
+
 		var F = 0.5 * rho * Math.pow(v, 2) * (Math.cos(rad(thetaMotion)) * cD + Math.sin(rad(thetaMotion)) * cL) * a
 
 		return F
@@ -449,7 +470,9 @@ class DiscusTrajectoryCalculator {
 
 		// Since lift is perpendicular to the angle of motion, we add 90° to thetaMotion
 
-		var F = 0.5 * rho * Math.pow(v, 2) * (Math.cos(rad(thetaMotion)) * cL + Math.sin(rad(thetaMotion)) * cD) * a
+		// thetaMotion = Math.abs(thetaMotion)
+
+		var F = 0.5 * rho * Math.pow(v, 2) * (Math.cos(rad(thetaMotion)) * cL - Math.sin(rad(thetaMotion)) * cD) * a
 
 		return F
 		
