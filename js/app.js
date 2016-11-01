@@ -1,5 +1,10 @@
 var fullWidthGraph = true
 
+var globalVariables = {
+	'fullWidthGraph': true,
+	'animate': true
+}
+
 // Converts degrees into radians
 function rad(deg) {
 
@@ -28,8 +33,9 @@ $('.toggle').on('click tap', function(e){
 	$(this).toggleClass('checked')
 
 	fullWidthGraph = $(this).hasClass('checked')
+	var eventParam = $(this).attr('toggleFeature')
 
-	var event = new CustomEvent('changeGraphWidth', {
+	var event = new CustomEvent(eventParam, {
 		'detail': $(this).hasClass('checked')
 	})
 

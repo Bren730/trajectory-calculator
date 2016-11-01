@@ -24,7 +24,7 @@ class Graph {
 		// Default text size
 		this.textSize = 8
 		// The total width of the image
-		if (fullWidthGraph) {
+		if (globalVariables.fullWidthGraph) {
 
 			this.svgWidth = 900
 
@@ -105,6 +105,12 @@ class Graph {
 
 		})
 
+		document.addEventListener('animateGraphs', function(e) {
+
+			globalVariables.animate = e.detail
+
+		})
+
 	}
 
 	addTrajectory(trajectory) {
@@ -174,10 +180,22 @@ class Graph {
 			// Save the line color in the trajectory object
 			trajectory.color = this.colors[i]
 
+			var dashLen
+
+			if (globalVariables.animate) {
+
+				dashLen = trajectory.pathLength * this.graphScale
+
+			} else {
+
+				dashLen = 0
+
+			}
+
 			polylineEl.attr({
 				'stroke': this.colors[i],
-				'stroke-dasharray': trajectory.pathLength * this.graphScale,
-				'stroke-dashoffset': trajectory.pathLength * this.graphScale
+				'stroke-dasharray': dashLen,
+				'stroke-dashoffset': dashLen
 			})
 
 			polylineEl.animate({

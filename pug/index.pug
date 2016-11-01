@@ -13,10 +13,16 @@ body(ontouchstart)
 		h1 Discus trajectory calculator
 
 		.toggle-container
-			.toggle(toggleFeature='graphWidth').checked
+			.toggle(toggleFeature='changeGraphWidth').checked
 				.toggle-fill
 				.toggle-state
 			label.toggle-label Full width graph
+
+		.toggle-container
+			.toggle(toggleFeature='animateGraphs').checked
+				.toggle-fill
+				.toggle-state
+			label.toggle-label Animate
 
 		section.vacuum.model
 			h2 Perfect vacuum
