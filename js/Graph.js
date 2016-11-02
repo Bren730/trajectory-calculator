@@ -144,7 +144,6 @@ class Graph {
 
 		this.graphScale = plotWidth / xMax
 		this.graphHeight = (this.graphScale * yMax) + this.axesPadding
-		console.log(plotWidth, this.graphScale)
 
 		// Set the height of the graph DOM object
 		graphEl.height(this.graphHeight)
@@ -334,7 +333,6 @@ class Graph {
 					})
 
 					yPos += (this.textSize + 5)
-					console.log(yPos)
 
 				}
 

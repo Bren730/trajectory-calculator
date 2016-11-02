@@ -60,8 +60,14 @@ body(ontouchstart)
 					label &theta;#[sub release]
 					input(id='air-resistance-thetaRelease0' model='air-resistance' placeholder="35°")
 				.variable
+					label &theta;#[sub release]
+					input(type='range' id='air-resistance-thetaRelease0-range' min='0' max='90' step='0.5' model='air-resistance')
+				.variable
 					label &theta;#[sub attack]
 					input(id='air-resistance-thetaAttack0' model='air-resistance' placeholder="0°")
+				.variable
+					label &theta;#[sub attack]
+					input(type='range' id='air-resistance-thetaAttack0-range' min='-90' max='90' step='0.5' model='air-resistance')
 				.variable
 					label v#[sub wind]
 					input(id='air-resistance-vWind' model='air-resistance' placeholder="0 m/s")

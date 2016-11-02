@@ -74,6 +74,24 @@ class DiscusTrajectoryCalculator {
 
 		})
 
+		$('#air-resistance-thetaRelease0-range').on('input', function(e) {
+
+			// console.log($(this).val())
+			$('#air-resistance-thetaRelease0').val($(this).val())
+			self.airResistanceTrajectories = []
+			self.airResistance()
+
+		})
+
+		$('#air-resistance-thetaAttack0-range').on('input', function(e) {
+
+			// console.log($(this).val())
+			$('#air-resistance-thetaAttack0').val($(this).val())
+			self.airResistanceTrajectories = []
+			self.airResistance()
+
+		})
+
 	}
 
 	vacuum(variables) {
@@ -228,23 +246,25 @@ class DiscusTrajectoryCalculator {
 		// Initial x speed
 		var vx0 = v0 * Math.cos(rad(thetaRelease0))
 		variables.vx0 = vx0
+		// X speed at time t
+		var vx = vx0
+
 		// Initial y speed
 		var vy0 = v0 * Math.sin(rad(thetaRelease0))
 		variables.vy0 = vy0
+		// Y speed at time t
+		var vy = vy0
 
 		// The wind speed (solely in x-direction), negative values represent a headwind
 		var vWind = parseFloat($('#air-resistance-vWind').val()) || variables.vWind
 		variables.vWind = vWind
 		var vRelX0 = vx0 - vWind
+		var vRelX = vRelX0
+		var vRel = Math.sqrt(Math.pow(vRelX, 2) + Math.pow(vy, 2))
 
 		// Gravity
 		var g = parseFloat($('#air-resistance-g').val()) || variables.g
 		variables.g = g
-
-		// X speed at time t
-		var vx = vx0
-		// Y speed at time t
-		var vy = vy0
 
 		// air density
 		var rho = parseFloat($('#air-resistance-rho').val()) || variables.rho
@@ -265,18 +285,26 @@ class DiscusTrajectoryCalculator {
 		var thetaInclination = thetaRelease0 + thetaAttack0
 		variables.thetaInclination = thetaInclination
 
-		var cD = this.cDrag(thetaAttack, this.defVal.cDMin, this.defVal.cDMax)
-		var cL = this.cLift(thetaAttack)
-		var a = this.surfaceArea(thetaAttack, this.defVal.aFront, this.defVal.aBottom)
+		// The relative velocity also changes the relative angle of motion and thus the surface area exposed to air drag
+		var thetaMotionRel = deg(Math.atan(vy / vRelX))
+
+		var thetaAttackRel = thetaInclination - thetaMotionRel
+
+		var cD = this.cDrag(thetaAttackRel, this.defVal.cDMin, this.defVal.cDMax)
+		var cL = this.cLift(thetaAttackRel)
+		var a = this.surfaceArea(thetaAttackRel, this.defVal.aFront, this.defVal.aBottom)
 
 		// Initial x acceleration
-		var ax0 = -Math.abs(this.aAeroX(rho, v, cD, cL, a, thetaMotion, m))
+		var fAerodynamicsX = -this.fAeroX(rho, vRel, cD, cL, a, thetaMotionRel)
+		var aAerodynamicsX = -this.aAeroX(rho, vRel, cD, cL, a, thetaMotionRel, m)
+		var ax0 = aAerodynamicsX
 		var ax = ax0
-		// Initial y acceleration
-		var ay0 = -g + this.aAeroY(rho, v, cD, cL, a, thetaMotion, m)
-		var ay = ay0
 
-		console.log(ax0, ay0, cD, cL, a, g)
+		// Initial y acceleration
+		var fAerodynamicsY = this.fAeroY(rho, vRel, cD, cL, a, thetaMotionRel)
+		var aAerodynamicsY = this.aAeroY(rho, vRel, cD, cL, a, thetaMotionRel, m)
+		var ay0 = -g + aAerodynamicsY
+		var ay = ay0
 
 		// Time starts at 0s
 		var t = 0
@@ -286,8 +314,6 @@ class DiscusTrajectoryCalculator {
 
 		// Array to hold the data in [ [t0, x, y], [t1, x, y]... ] format
 		var data = []
-
-		console.log(v0, thetaRelease0, g, y0, deltaT, vx0, vy0, rho, m, thetaAttack0)
 
 		var id = 'air-resistance-' + this.vacuumTrajectories.length
 
@@ -302,10 +328,16 @@ class DiscusTrajectoryCalculator {
 			'x' : x, 
 			'y' : y,
 			'v' : v,
+			'vRel': vRel,
 			'vx' : vx, 
-			'vy' : vy, 
+			'vRelX': vRelX,
+			'vy' : vy,
 			'ax' : ax, 
 			'ay' : ay,
+			'fAeroX': fAerodynamicsX,
+			'fAeroY': fAerodynamicsY,
+			'aAeroX': aAerodynamicsX,
+			'aAeroY': aAerodynamicsY,
 			'thetaMotion' : thetaMotion,
 			'thetaAttack' : thetaAttack,
 			'cD' : cD,
@@ -320,22 +352,23 @@ class DiscusTrajectoryCalculator {
 
 			thetaAttack = thetaInclination - thetaMotion
 
-			var vRelX = vx - vWind
+			vRelX = vx - vWind
+			var vRel = Math.sqrt(Math.pow(vRelX, 2) + Math.pow(vy, 2))
 			// The relative velocity also changes the relative angle of motion and thus the surface area exposed to air drag
-			var thetaMotionRel = deg(Math.atan(vy / vRelX))
+			thetaMotionRel = deg(Math.atan(vy / vRelX))
 
-			var thetaAttackRel = thetaInclination - thetaMotionRel
+			thetaAttackRel = thetaInclination - thetaMotionRel
 
 			cD = this.cDrag(thetaAttackRel, this.defVal.cDMin, this.defVal.cDMax)
 			cL = this.cLift(thetaAttackRel)
 			a = this.surfaceArea(thetaAttackRel, this.defVal.aFront, this.defVal.aBottom)
 
-			
-			var vRel = Math.sqrt(Math.pow(vRelX, 2) + Math.pow(vy, 2))
+			fAerodynamicsX = -this.fAeroX(rho, vRel, cD, cL, a, thetaMotionRel)
+			fAerodynamicsY = this.fAeroY(rho, vRel, cD, cL, a, thetaMotionRel)
 
-			var aAerodynamicsX = -Math.abs(this.aAeroX(rho, vRel, cD, cL, a, thetaMotionRel, m))
-			var aAerodynamicsY = this.aAeroY(rho, vRel, cD, cL, a, thetaMotionRel, m)
-			console.log(thetaMotion, thetaMotionRel)
+			aAerodynamicsX = -this.aAeroX(rho, vRel, cD, cL, a, thetaMotionRel, m)
+			aAerodynamicsY = this.aAeroY(rho, vRel, cD, cL, a, thetaMotionRel, m)
+			// console.log(aAerodynamicsX)
 
 			ax = aAerodynamicsX
 			ay = -g + aAerodynamicsY
@@ -358,10 +391,14 @@ class DiscusTrajectoryCalculator {
 				'x' : x, 
 				'y' : y,
 				'v' : v,
+				'vRel': vRel,
 				'vx' : vx, 
-				'vy' : vy, 
+				'vRelX': vRelX,
+				'vy' : vy,
 				'ax' : ax, 
 				'ay' : ay,
+				'fAeroX': fAerodynamicsX,
+				'fAeroY': fAerodynamicsY,
 				'aAeroX': aAerodynamicsX,
 				'aAeroY': aAerodynamicsY,
 				'thetaMotion' : thetaMotion,
