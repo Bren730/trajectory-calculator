@@ -220,7 +220,7 @@ class DiscusTrajectoryCalculator {
 
 	}
 
-	airResistance(variables) {
+	airResistance(variables, draw = true) {
 
 		// This JSON code is necessary to make a copy of the defVal object without referencing it
 		variables = variables || copyObj(this.defVal)
@@ -295,8 +295,8 @@ class DiscusTrajectoryCalculator {
 		var a = this.surfaceArea(thetaAttackRel, this.defVal.aFront, this.defVal.aBottom)
 
 		// Initial x acceleration
-		var fAerodynamicsX = -this.fAeroX(rho, vRel, cD, cL, a, thetaMotionRel)
-		var aAerodynamicsX = -this.aAeroX(rho, vRel, cD, cL, a, thetaMotionRel, m)
+		var fAerodynamicsX = this.fAeroX(rho, vRel, cD, cL, a, thetaMotionRel)
+		var aAerodynamicsX = this.aAeroX(rho, vRel, cD, cL, a, thetaMotionRel, m)
 		var ax0 = aAerodynamicsX
 		var ax = ax0
 
@@ -363,10 +363,10 @@ class DiscusTrajectoryCalculator {
 			cL = this.cLift(thetaAttackRel)
 			a = this.surfaceArea(thetaAttackRel, this.defVal.aFront, this.defVal.aBottom)
 
-			fAerodynamicsX = -this.fAeroX(rho, vRel, cD, cL, a, thetaMotionRel)
+			fAerodynamicsX = this.fAeroX(rho, vRel, cD, cL, a, thetaMotionRel)
 			fAerodynamicsY = this.fAeroY(rho, vRel, cD, cL, a, thetaMotionRel)
 
-			aAerodynamicsX = -this.aAeroX(rho, vRel, cD, cL, a, thetaMotionRel, m)
+			aAerodynamicsX = this.aAeroX(rho, vRel, cD, cL, a, thetaMotionRel, m)
 			aAerodynamicsY = this.aAeroY(rho, vRel, cD, cL, a, thetaMotionRel, m)
 			// console.log(aAerodynamicsX)
 
@@ -432,10 +432,13 @@ class DiscusTrajectoryCalculator {
 		trajectory.flightTime = t
 		this.airResistanceTrajectories.push(trajectory)
 
-		this.graph = new Graph(this.airResistanceTrajectories, 'air-resistance-model-svg')
-		this.graph.draw('air-resistance-model-svg')
+		if (draw){
+			this.graph = new Graph(this.airResistanceTrajectories, 'air-resistance-model-svg')
+			this.graph.draw('air-resistance-model-svg')
+		}
+		
 
-		console.log(trajectory)
+		// console.log(trajectory)
 
 		// this.drawGraph(data, 'air-resistance-model-svg')
 
@@ -447,7 +450,9 @@ class DiscusTrajectoryCalculator {
 
 		var cD = (thetaAttack / 90) * (cDMax - cDMin) + cDMin
 
-		return cD
+		// console.log(cD)
+
+		return Math.abs(cD)
 
 	}
 
@@ -476,6 +481,8 @@ class DiscusTrajectoryCalculator {
 
 		}
 
+		// console.log(cL)
+
 		return cL
 
 	}
@@ -497,7 +504,8 @@ class DiscusTrajectoryCalculator {
 
 		// thetaMotion = Math.abs(thetaMotion)
 
-		var F = 0.5 * rho * Math.pow(v, 2) * (Math.cos(rad(thetaMotion)) * cD + Math.sin(rad(thetaMotion)) * cL) * a
+		// var F = 0.5 * rho * Math.pow(v, 2) * (Math.cos(rad(thetaMotion)) * cD + Math.sin(rad(thetaMotion)) * cL) * a
+		var F = 0.5 * rho * Math.pow(v, 2) * (-Math.cos(rad(thetaMotion)) * cD - Math.cos(rad(90 - thetaMotion)) * cL) * a
 
 		return F
 
@@ -509,7 +517,8 @@ class DiscusTrajectoryCalculator {
 
 		// thetaMotion = Math.abs(thetaMotion)
 
-		var F = 0.5 * rho * Math.pow(v, 2) * (Math.cos(rad(thetaMotion)) * cL - Math.sin(rad(thetaMotion)) * cD) * a
+		// var F = 0.5 * rho * Math.pow(v, 2) * (Math.cos(rad(thetaMotion)) * cL - Math.sin(rad(thetaMotion)) * cD) * a
+		var F = 0.5 * rho * Math.pow(v, 2) * (Math.sin(rad(90 - thetaMotion)) * cL - Math.sin(rad(thetaMotion)) * cD) * a
 
 		return F
 		
