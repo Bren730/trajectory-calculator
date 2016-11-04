@@ -105,12 +105,6 @@ class Graph {
 
 		})
 
-		document.addEventListener('animateGraphs', function(e) {
-
-			globalVariables.animate = e.detail
-
-		})
-
 	}
 
 	addTrajectory(trajectory) {

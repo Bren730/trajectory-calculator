@@ -42,3 +42,9 @@ $('.toggle').on('click tap', function(e){
 	document.dispatchEvent(event)
 
 })
+
+document.addEventListener('animateGraphs', function(e) {
+
+	globalVariables.animate = e.detail
+
+})
