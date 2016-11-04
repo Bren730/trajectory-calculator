@@ -40,7 +40,7 @@ body(ontouchstart)
 					input(id='vacuum-g' model='vacuum' placeholder="9.81 m/s²")
 				.variable
 					label release height
-					input(id='vacuum-y0' model='vacuum' placeholder="1.02 m")
+					input(id='vacuum-y0' model='vacuum' placeholder="1.492 m")
 				.variable
 					label &Delta;t
 					input(id='vacuum-deltaT' model='vacuum' placeholder="0.01 s")
@@ -76,7 +76,7 @@ body(ontouchstart)
 					input(id='air-resistance-g' model='air-resistance' placeholder="9.81 m/s²")
 				.variable
 					label release height
-					input(id='air-resistance-y0' model='air-resistance' placeholder="1.02 m")
+					input(id='air-resistance-y0' model='air-resistance' placeholder="1.492 m")
 				.variable
 					label &Delta;t
 					input(id='air-resistance-deltaT' model='air-resistance' placeholder="0.01 s")
@@ -86,6 +86,12 @@ body(ontouchstart)
 				.variable
 					label Mass
 					input(id='air-resistance-m' model='air-resistance' placeholder="2 kg")
+				.variable
+					label Discus diameter
+					input(id='air-resistance-discusD' model='air-resistance' placeholder="0.220 m")
+				.variable
+					label Discus height
+					input(id='air-resistance-discusH' model='air-resistance' placeholder="0.045 m")
 
 			button(id='air-resistance-calculate').btn Calculate
 			a(id='air-resistance-save' href='' target='_blank').btn Save

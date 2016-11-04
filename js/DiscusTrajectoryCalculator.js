@@ -37,7 +37,7 @@ class DiscusTrajectoryCalculator {
 		// Standard maximum drag coefficient (dimensionless)
 		this.defVal.cDMax = 1.1
 		// Average release height (m)
-		this.defVal.y0 = 1.02
+		this.defVal.y0 = 1.492
 		// Default x starting distance 
 		this.defVal.x0 = 0
 		// Standard delta time interval (s)
@@ -525,9 +525,17 @@ class DiscusTrajectoryCalculator {
 
 	surfaceArea(thetaAttack, diameter, height) {
 
-		// Frontal surface area of a 2kg discus (m^2)
-		var aMin = (0.0535 * height) + (0.0835 * height)
-		// Bottom surface area of a 2kg discus (m^2)
+		// Diameter of the flat disc in the centre of the discus, static for all discuses
+		var centreDiscLength = 0.0535
+		// The projected area of the centre part of the discus
+		var centreSurfaceArea = centreDiscLength * height
+
+		// The taper of the discus means the area of the diagonal part would be 0.5 * diagonalWidth * height
+		// Both sides of the discus have this taper, resulting in a frontal surface area of diagonalWidth * height + centreSurfaceArea
+		var diagonalWidth = (diameter - centreDiscLength)
+		var aMin = diagonalWidth * height + centreSurfaceArea
+
+		// Bottom surface area is simply the surface area of a circle with radius 0.5 * diameter
 		var aMax = Math.PI * Math.pow((diameter / 2), 2)
 
 		// The attack angle is in degrees. At 0 degrees it is cDMin, at 90 it is cDMax
