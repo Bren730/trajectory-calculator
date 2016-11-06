@@ -222,7 +222,7 @@ class DiscusTrajectoryCalculator {
 
 	airResistance(variables, draw = true) {
 
-		// This JSON code is necessary to make a copy of the defVal object without referencing it
+		// copyObj is necessary to make a copy of the defVal object without referencing it
 		variables = variables || copyObj(this.defVal)
 
 		//Initial speed
@@ -236,8 +236,10 @@ class DiscusTrajectoryCalculator {
 		var x = x0
 		// Initial y height is the release height
 		var y0 = parseFloat($('#air-resistance-y0').val()) || variables.y0
+		console.log(y0, variables.y0)
 		variables.y0 = y0
 		var y = y0
+
 
 		// Initial release angle
 		var thetaRelease0 = parseFloat($('#air-resistance-thetaRelease0').val()) || variables.thetaRelease0
@@ -411,10 +413,12 @@ class DiscusTrajectoryCalculator {
 			cL = this.cLift(thetaAttackRel)
 			a = this.surfaceArea(thetaAttackRel, discusD, discusH)
 
-			console.log(cL)
+			// console.log(cL)
 
 			fAerodynamicsX = this.fAeroX(rho, vRel, cD, cL, a, thetaMotionRel)
 			fAerodynamicsY = this.fAeroY(rho, vRel, cD, cL, a, thetaMotionRel)
+
+			// console.log(rho, vRel, cD, cL, a, thetaMotionRel)
 
 			aAerodynamicsX = this.aAeroX(rho, vRel, cD, cL, a, thetaMotionRel, m)
 			aAerodynamicsY = this.aAeroY(rho, vRel, cD, cL, a, thetaMotionRel, m)
@@ -468,6 +472,20 @@ class DiscusTrajectoryCalculator {
 
 	cDrag(thetaAttack, cDMin, cDMax) {
 
+		if (thetaAttack > 90) {
+
+			// A positive angle of attack greater than 90 is the equivalent of a negative angle of attack
+			thetaAttack -= 180
+
+		}
+
+		if (thetaAttack <= -90) {
+
+			// A negative angle of attack smaller than -90 is the equivalent of a positive angle of attack
+			thetaAttack += 180
+
+		}
+
 		var cD = (thetaAttack / 90) * (cDMax - cDMin) + cDMin
 
 		// console.log(cD)
@@ -482,13 +500,29 @@ class DiscusTrajectoryCalculator {
 
 		var direction = thetaAttack > 0? 1 : -1
 
+		if (thetaAttack > 90) {
+
+			// A positive angle of attack greater than 90 is the equivalent of a negative angle of attack
+			thetaAttack -= 180
+			direction = -1
+
+		}
+
+		if (thetaAttack <= -90) {
+
+			// A negative angle of attack smaller than -90 is the equivalent of a positive angle of attack
+			thetaAttack += 180
+			direction = 1
+
+		}
+
 		if (thetaAttack === 0) {
 
 			direction = 0
 
 		}
 
-		if (Math.abs(thetaAttack) === 90) {
+		if (Math.abs(thetaAttack) == 90) {
 
 			direction = 0
 
@@ -524,6 +558,20 @@ class DiscusTrajectoryCalculator {
 	}
 
 	surfaceArea(thetaAttack, diameter, height) {
+
+		if (thetaAttack > 90) {
+
+			// A positive angle of attack greater than 90 is the equivalent of a negative angle of attack
+			thetaAttack -= 180
+
+		}
+
+		if (thetaAttack <= -90) {
+
+			// A negative angle of attack smaller than -90 is the equivalent of a positive angle of attack
+			thetaAttack += 180
+
+		}
 
 		// Diameter of the flat disc in the centre of the discus, static for all discuses
 		var centreDiscLength = 0.0535

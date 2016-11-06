@@ -69,7 +69,12 @@ class Graph {
 			'stroke-linecap': 'round'
 		}
 
-		this.legendExclusions = "vx0 vy0 thetaMotion0 thetaInclination"
+		this.legendExclusions = {
+			"vx0": true,
+			"vy0": true,
+			"thetaMotion0": true,
+			"thetaInclination": true
+		}
 
 		this.translationTable = {
 			'v0': 'v₀',
@@ -313,7 +318,9 @@ class Graph {
 
 			for (var key in trajectory.variables) {
 
-				if (trajectory.variables[key] != defVal[key] && !this.legendExclusions.includes(key)) {
+				console.log(trajectory.variables[key], defVal[key])
+
+				if (trajectory.variables[key] != defVal[key] && !this.legendExclusions[key]) {
 
 					hasDifferentKey = true
 
