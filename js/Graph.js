@@ -375,13 +375,17 @@ class Graph {
 		var svg = document.getElementById(id)
 		var model = $(svg).attr('model')
 		var saveBtn = model + '-save'
+		var saveBtnEl = document.getElementById(saveBtn)
+
+		var fileName = 'Graph.svg'
+		$(saveBtnEl).attr('download', fileName)
 
 		var serializer = new XMLSerializer()
 		var source = serializer.serializeToString(svg)
 
 		var url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
 
-		document.getElementById(saveBtn).href = url
+		saveBtnEl.href = url
 
 	}
 
