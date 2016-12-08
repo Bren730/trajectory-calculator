@@ -312,6 +312,18 @@ class Graph {
 		var yPos = 10
 		var yStart = yPos
 
+		var maj = this.trajectories[0].version[0]
+		var min = this.trajectories[0].version[1]
+		var patch = this.trajectories[0].version[2]
+		var versionStr = "Model version: " + maj + "." + min + "." + patch
+		var versionNr = snap.text(this.axesPadding + 5, this.graphHeight - this.axesPadding - 5, versionStr)
+
+		versionNr.attr(this.textAttrs)
+		versionNr.attr({
+			'text-anchor': 'start',
+			'font-size': '5pt'
+		})
+
 		for (let trajectory of this.trajectories) {
 
 			var hasDifferentKey = false

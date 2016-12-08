@@ -1,6 +1,6 @@
 class Trajectory {
 
-	constructor(id, model, data, xMax, yMax, flightTime, variables) {
+	constructor(id, model, data, xMax, yMax, flightTime, variables, version) {
 
 		var self = this
 
@@ -24,6 +24,9 @@ class Trajectory {
 
 		// The delta time value used in the simulation
 		this.variables = variables
+
+		//The version used to calculate the model
+		this.version = version
 
 	}
 
