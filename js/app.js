@@ -1,7 +1,7 @@
 var fullWidthGraph = true
 
 var globalVariables = {
-	'fullWidthGraph': true,
+	'fullWidthGraph': false,
 	'animate': true
 }
 

@@ -54,6 +54,18 @@ class Graph {
 		'rgb(234, 236, 240)'
 		]
 
+		this.lineColors = []
+
+		var maxLines = 100;
+
+		for (var i = 0; i < maxLines; i++) {
+
+			var r = Math.round( 241 + ( (255 - 241) * (i / maxLines) ))
+			var g = Math.round( 94 + ( (255 - 94) * (i / maxLines) ))
+			var b = Math.round( 34 + ( (255 - 34) * (i / maxLines) ))
+			this.lineColors[i] = 'rgb(' + r + ', ' + g + ', ' + b + ')'
+		}
+
 		this.textAttrs = {
 			'font-family': 'FF Mark Pro',
 			'font-size': this.textSize + 'pt',
@@ -90,16 +102,12 @@ class Graph {
 
 			if (e.detail){
 
-				console.log(e.detail)
-
 				self.svgWidth = 900
 				self.graphWidth = self.svgWidth - self.legendWidth
 
 				self.draw(self.id)
 
 			} else 	{
-
-				console.log(e.detail)
 
 				self.svgWidth = 448
 				self.graphWidth = self.svgWidth - self.legendWidth
@@ -191,7 +199,7 @@ class Graph {
 			}
 
 			polylineEl.attr({
-				'stroke': this.colors[i],
+				'stroke': this.lineColors[i],
 				'stroke-dasharray': dashLen,
 				'stroke-dashoffset': dashLen
 			})
@@ -330,7 +338,7 @@ class Graph {
 
 			for (var key in trajectory.variables) {
 
-				console.log(trajectory.variables[key], defVal[key])
+				// console.log(trajectory.variables[key], defVal[key])
 
 				if (trajectory.variables[key] != defVal[key] && !this.legendExclusions[key]) {
 

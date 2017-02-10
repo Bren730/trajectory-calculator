@@ -152,7 +152,7 @@ class DiscusTrajectoryCalculator {
 		// Array to hold the data in [ [t0, x, y], [t1, x, y]... ] format
 		var data = []
 
-		console.log(v0, thetaRelease0, g, y0, deltaT, vx0, vy0)
+		// console.log(v0, thetaRelease0, g, y0, deltaT, vx0, vy0)
 
 		var id = 'vacuum-' + this.vacuumTrajectories.length
 
@@ -223,6 +223,42 @@ class DiscusTrajectoryCalculator {
 
 	}
 
+	massTest(variable, min, max, steps) {
+
+		var variables = copyObj(this.defVal)
+
+		if (!variables[variable]) {
+
+			throw variable + " is not a member of variables"
+
+		}
+
+		// Reset list
+		this.airResistanceTrajectories = []
+
+		var results = []
+		var resultString = ''
+
+		variables[variable] = min
+		var diff = max - min
+		var stepSize = 1 / (steps - 1)
+
+		for (var i = 0; i < steps; i++) {
+
+			this.airResistance(variables)
+
+			resultString += variables[variable].toLocaleString('de-DE', {minimumFractionDigits: 13}) + '	' + this.airResistanceTrajectories[i].xMax.toLocaleString('de-DE', {minimumFractionDigits: 13}) + '\n'
+			// results.push(resultString)
+
+			variables[variable] = min + (diff * (stepSize * (i + 1)) )
+
+		}
+
+		console.log(results)
+		console.log(resultString)
+
+	}
+
 	airResistance(variables, draw = true) {
 
 		// copyObj is necessary to make a copy of the defVal object without referencing it
@@ -239,7 +275,7 @@ class DiscusTrajectoryCalculator {
 		var x = x0
 		// Initial y height is the release height
 		var y0 = parseFloat($('#air-resistance-y0').val()) || variables.y0
-		console.log(y0, variables.y0)
+		// console.log(y0, variables.y0)
 		variables.y0 = y0
 		var y = y0
 
